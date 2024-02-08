@@ -44,6 +44,12 @@ class StatusBar {
         this.drawBar();
     }
 
+    increaseBar(value) {
+        if(this.initialEnergy<=this.barSize) {
+            this.initialEnergy += value;
+        }
+    }
+
 
     
 }

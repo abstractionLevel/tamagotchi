@@ -7,9 +7,7 @@ class CatStateManager {
         this.rightBoundary = config.width - this.catWidth;
         this.currentStateCat = NPC_STATES.SITTING;
         this.randomCatState = true;
-        this.actionTime = 0;
         this.nextActionTime = 0;
-        this.fattoreDescreasEnergy = 0;
         this.currentTime = 0;
 
     }
@@ -34,32 +32,26 @@ class CatStateManager {
     }
 
     setStateCat(catState, time) {
-
         switch (catState) {
             case NPC_STATES.WALKING_LEFT:
-                this.moveCatDirection(true);
-                this.fattoreDescreasEnergy = 5;
+                this.setAnimation(true);
                 break;
             case NPC_STATES.WALKING_RIGHT:
-                this.moveCatDirection(false);
-                this.fattoreDescreasEnergy = 5;
+                this.setAnimation(false);
                 break;
             case NPC_STATES.SITTING:
                 this.cat.play(NPC_STATES.SITTING, true);
-                this.fattoreDescreasEnergy = 1;
                 break;
             case NPC_STATES.EATING:
                 this.cat.play(NPC_STATES.EATING, true);
-                this.fattoreDescreasEnergy = 1;
-                if (time >= this.actionTime + 5000) {
+                if (time >= this.currentTime + 5000) {
                     this.randomCatState = true;
                 }
                 break;
         }
     }
 
-    moveCatDirection(flip) {
-        this.cat.x += flip ? -1 : 1;
+    setAnimation(flip) {
         this.cat.play(NPC_STATES.WALKING, true);
         this.cat.setFlip(flip);
         if ((this.cat.x <= this.leftBoundary + this.catWidth) || (this.cat.x + this.catWidth >= this.rightBoundary)) {
@@ -68,7 +60,8 @@ class CatStateManager {
         }
     }
 
-    actionEating() {
+    actionEating(currentTime) {
+        this.currentTime = currentTime
         this.currentStateCat = NPC_STATES.EATING;
         this.randomCatState = false;
     }
