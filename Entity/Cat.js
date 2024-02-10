@@ -29,7 +29,15 @@ class Cat extends Phaser.GameObjects.Sprite {
             frameRate: 0.8,
             repeat: -1,
         });
+
+        anims.create({
+            key: NPC_STATES.SLEEP,
+            frames: this.anims.generateFrameNumbers("cat", { start: 48, end: 50 }),
+            frameRate: 0.8,
+            repeat: -1,
+        })
     }
+
 
     update(time) {
        

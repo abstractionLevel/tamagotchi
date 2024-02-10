@@ -1,5 +1,5 @@
 class CatMovementManager {
-    
+
     constructor(cat,catStateManager) {
         this.cat = cat;
         this.catStateManager = catStateManager;
@@ -19,6 +19,10 @@ class CatMovementManager {
                 break;
             case NPC_STATES.EATING:
                 this.stop();
+                break;
+            case NPC_STATES.SLEEP:
+                this.stop();
+                break;
         }
     }
 

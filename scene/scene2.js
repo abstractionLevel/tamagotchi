@@ -15,8 +15,8 @@ class Scene2 extends Phaser.Scene {
         this.currentTime = 0;
         this.foodBar;
         this.catMovementManager;
-        this.fattoreDescreaseEnergy = 1; // Fattore di decremento dell'energia
-        this.fattoreDecreaseFood = 1;
+        this.fattoreEnergy = 1;
+        this.fattoreFood = 0;
     }
 
     create() {
@@ -25,6 +25,7 @@ class Scene2 extends Phaser.Scene {
         this.setUpPlatform();
         this.setUpColliders();
         this.giveFood();
+        this.sleep();
     }
 
     setupCat() {
@@ -62,11 +63,25 @@ class Scene2 extends Phaser.Scene {
         zone.on('pointerup', () => {
             if (this.catStateManager.currentStateCat !== NPC_STATES.EATING) {
                 this.catStateManager.actionEating(this.currentTime);
-                this.foodBar.increaseBar(20);
+                this.foodBar.increaseBar(5);
             }
 
         });
 
+    }
+
+    sleep() {
+        this.add.text(this.positionGiveFood.x + 150, this.positionGiveFood.y, 'sleep', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+        const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
+            .setOrigin(0).setInteractive();
+
+        zone.on('pointerup', () => {
+           this.catStateManager.actionSleep();
+
+        });
     }
 
     update(time) {
@@ -77,32 +92,36 @@ class Scene2 extends Phaser.Scene {
 
         switch (this.catStateManager.currentStateCat) {
             case NPC_STATES.WALKING_LEFT:
-                this.fattoreDescreaseEnergy = 2;
-                this.fattoreDecreaseFood = 5;
+                this.fattoreEnergy = 4;
+                this.fattoreFood = 1;
             case NPC_STATES.WALKING_RIGHT:
-                this.fattoreDescreaseEnergy = 2;
-                this.fattoreDecreaseFood = 5;
+                this.fattoreEnergy = 4;
+                this.fattoreFood = 1;
                 break;
             case NPC_STATES.SITTING:
-                this.fattoreDescreaseEnergy = 1;
-                this.fattoreDecreaseFood = 5;
+                this.fattoreEnergy = 4;
+                this.fattoreFood = 1;
                 break;
             case NPC_STATES.EATING:
+                // Fattori specifici per lo stato di mangiare, se necessario
+                break;
+            case NPC_STATES.SLEEP:
+                this.fattoreEnergy = -4;
                 // Fattori specifici per lo stato di mangiare, se necessario
                 break;
         }
 
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
         this.textCatManager.updateTextPosition(this.cat);
-        this.energyBar.updateBar(time, this.fattoreDescreaseEnergy);
-        this.foodBar.updateBar(time, this.fattoreDecreaseFood);
+        this.energyBar.updateBar(time, this.fattoreEnergy);
+        this.foodBar.updateBar(time, this.fattoreFood);
     }
 
-    decreaseEnergy() {
-        if (this.initialEnergy !== 0) {
-            this.initialEnergy = this.initialEnergy - this.factoreDescreaseEnergy;
-        }
-        this.drawEnergyBar();
-    }
+    // decreaseEnergy() {
+    //     if (this.initialEnergy !== 0) {
+    //         this.initialEnergy = this.initialEnergy - this.factoreDescreaseEnergy;
+    //     }
+    //     this.drawEnergyBar();
+    // }
 
 }

@@ -5,7 +5,8 @@ const NPC_STATES = {
     SITTING: 'sitting',
     JUMPING: 'jumping',
     EATING: "eating",
-    WALKING: "WALKING"
+    WALKING: "WALKING",
+    SLEEP: "SLEEP",
 };
 
 const DECREASES_BAR = {

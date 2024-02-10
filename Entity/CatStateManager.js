@@ -48,6 +48,9 @@ class CatStateManager {
                     this.randomCatState = true;
                 }
                 break;
+            case NPC_STATES.SLEEP:
+                this.cat.play(NPC_STATES.SLEEP, true);
+                break;
         }
     }
 
@@ -64,5 +67,11 @@ class CatStateManager {
         this.currentTime = currentTime
         this.currentStateCat = NPC_STATES.EATING;
         this.randomCatState = false;
+    }
+
+    actionSleep() {
+        this.currentStateCat = NPC_STATES.SLEEP;
+        this.randomCatState = false;
+        console.log("dorme")
     }
 }
