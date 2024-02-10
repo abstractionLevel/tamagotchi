@@ -17,6 +17,8 @@ class Scene2 extends Phaser.Scene {
         this.catMovementManager;
         this.fattoreEnergy = 1;
         this.fattoreFood = 0;
+        this.sleepText = null;
+        this.wakeUpText = null;
     }
 
     create() {
@@ -25,6 +27,7 @@ class Scene2 extends Phaser.Scene {
         this.setUpPlatform();
         this.setUpColliders();
         this.giveFood();
+        this.wakeUp();
         this.sleep();
     }
 
@@ -71,17 +74,19 @@ class Scene2 extends Phaser.Scene {
     }
 
     sleep() {
-        this.add.text(this.positionGiveFood.x + 150, this.positionGiveFood.y, 'sleep', {
+        this.sleepText = this.add.text(this.positionGiveFood.x + 150, this.positionGiveFood.y, 'sleep', {
             fontSize: '16px',
             fill: '#000000'
         });
-        const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
-            .setOrigin(0).setInteractive();
 
-        zone.on('pointerup', () => {
-           this.catStateManager.actionSleep();
+    }
 
+    wakeUp() {
+        this.wakeUpText = this.add.text(this.positionGiveFood.x + 150, this.positionGiveFood.y, 'wake up', {
+            fontSize: '16px',
+            fill: '#000000'
         });
+
     }
 
     update(time) {
@@ -107,21 +112,35 @@ class Scene2 extends Phaser.Scene {
                 break;
             case NPC_STATES.SLEEP:
                 this.fattoreEnergy = -4;
-                // Fattori specifici per lo stato di mangiare, se necessario
                 break;
+        }
+
+        if(this.catStateManager.currentStateCat===NPC_STATES.SLEEP) {
+            this.sleepText.setVisible(false);
+            this.wakeUpText.setVisible(true);
+        } else {
+            this.sleepText.setVisible(true);
+            this.wakeUpText.setVisible(false);
         }
 
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
         this.textCatManager.updateTextPosition(this.cat);
         this.energyBar.updateBar(time, this.fattoreEnergy);
         this.foodBar.updateBar(time, this.fattoreFood);
+        this.onClickWakeupSleepZone();
     }
 
-    // decreaseEnergy() {
-    //     if (this.initialEnergy !== 0) {
-    //         this.initialEnergy = this.initialEnergy - this.factoreDescreaseEnergy;
-    //     }
-    //     this.drawEnergyBar();
-    // }
+    onClickWakeupSleepZone() {
+        const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
+            .setOrigin(0).setInteractive();
+        zone.on('pointerup', () => {
+            if(this.catStateManager.currentStateCat === NPC_STATES.SLEEP) {
+                this.catStateManager.actionWakeUp();
+            } else {
+                this.catStateManager.actionSleep();
+            }
+        });
+
+    }
 
 }

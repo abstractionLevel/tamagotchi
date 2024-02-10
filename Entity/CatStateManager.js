@@ -72,6 +72,9 @@ class CatStateManager {
     actionSleep() {
         this.currentStateCat = NPC_STATES.SLEEP;
         this.randomCatState = false;
-        console.log("dorme")
+    }
+
+    actionWakeUp() {
+        this.randomCatState = true;
     }
 }
