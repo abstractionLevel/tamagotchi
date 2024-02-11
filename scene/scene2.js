@@ -5,20 +5,22 @@ class Scene2 extends Phaser.Scene {
         this.barSize = 50;
         this.initialEnergy = this.barSize;
         this.catState = NPC_STATES.SITTING;
-        this.positionEnergyBar = { x: 10, y: 50 };
-        this.factoreDescreaseEnergy = 1;
+        this.positionBar = { x: 10, y: 20 };
         this.positionGiveFood = { x: 10, y: config.height - 140 };
-        this.positionFoodBar = { x: 10, y: 70 };
         this.cat;
         this.textCatManager;
         this.energyBar;
         this.currentTime = 0;
         this.foodBar;
+        this.funBar;
         this.catMovementManager;
         this.fattoreEnergy = 1;
         this.fattoreFood = 0;
+        this.fattoreFun = 0;
         this.sleepText = null;
         this.wakeUpText = null;
+        this.playText = null;
+        this.stopPlayText = null;
     }
 
     create() {
@@ -29,10 +31,13 @@ class Scene2 extends Phaser.Scene {
         this.giveFood();
         this.wakeUp();
         this.sleep();
+        this.stopPlay();
+        this.play();
+
     }
 
     setupCat() {
-        this.cat = new Cat(this, config.width / 2 + 50, config.height - 280, "cat");
+        this.cat = new Cat(this, 200, config.height - 380, "cat");
         this.textCatManager = new TextCatManager(this, "meow", 0.2);
         this.catStateManager = new CatStateManager(this.cat);
         this.catMovementManager = new CatMovementManager(this.cat, this.catStateManager)
@@ -50,8 +55,10 @@ class Scene2 extends Phaser.Scene {
 
     setUpBackground() {
         this.cameras.main.setBackgroundColor('#FFFFFF');
-        this.energyBar = new StatusBar(this, { x: this.positionEnergyBar.x, y: this.positionEnergyBar.y - 20 }, "Energy");
-        this.foodBar = new StatusBar(this, { x: this.positionFoodBar.x, y: this.positionFoodBar.y }, "Hunger")
+        this.energyBar = new StatusBar(this, { x: this.positionBar.x, y: this.positionBar.y }, "Energy");
+        this.foodBar = new StatusBar(this, { x: this.positionBar.x + 80, y: this.positionBar.y }, "Hunger")
+        this.funBar = new StatusBar(this, { x: this.positionBar.x + 160, y: this.positionBar.y }, "Fun")
+
     }
 
     giveFood() {
@@ -70,7 +77,6 @@ class Scene2 extends Phaser.Scene {
             }
 
         });
-
     }
 
     sleep() {
@@ -78,13 +84,51 @@ class Scene2 extends Phaser.Scene {
             fontSize: '16px',
             fill: '#000000'
         });
-
     }
 
     wakeUp() {
         this.wakeUpText = this.add.text(this.positionGiveFood.x + 150, this.positionGiveFood.y, 'wake up', {
             fontSize: '16px',
             fill: '#000000'
+        });
+    }
+
+    play() {
+        this.playText = this.add.text(this.positionGiveFood.x + 250, this.positionGiveFood.y, 'Play', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+    }
+
+    stopPlay() {
+        this.stopPlayText = this.add.text(this.positionGiveFood.x + 250, this.positionGiveFood.y, 'Stop play', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+    }
+
+    onClickWakeupSleepZone() {
+        const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
+            .setOrigin(0).setInteractive();
+        zone.on('pointerup', () => {
+            if (this.catStateManager.currentStateCat === NPC_STATES.SLEEP) {
+                this.catStateManager.actionWakeUp();
+            } else {
+                this.catStateManager.actionSleep();
+            }
+        });
+
+    }
+
+    onClickPlay() {
+        const zone = this.add.zone(this.positionGiveFood.x + 250, this.positionGiveFood.y, 32, 32)
+            .setOrigin(0).setInteractive();
+        zone.on('pointerup', () => {
+            if (this.catStateManager.currentStateCat === NPC_STATES.RUN) {
+                this.catStateManager.randomCatState = true;
+            } else {
+                this.catStateManager.actionFun();
+            }
         });
 
     }
@@ -96,51 +140,60 @@ class Scene2 extends Phaser.Scene {
         this.catMovementManager.update();
 
         switch (this.catStateManager.currentStateCat) {
-            case NPC_STATES.WALKING_LEFT:
-                this.fattoreEnergy = 4;
+            case NPC_STATES.WALKING:
+                this.fattoreEnergy = 2;
                 this.fattoreFood = 1;
-            case NPC_STATES.WALKING_RIGHT:
-                this.fattoreEnergy = 4;
-                this.fattoreFood = 1;
-                break;
+                this.fattoreFun = 2;
             case NPC_STATES.SITTING:
-                this.fattoreEnergy = 4;
+                this.fattoreEnergy = 1;
                 this.fattoreFood = 1;
+                this.fattoreFun = 2;
                 break;
             case NPC_STATES.EATING:
-                // Fattori specifici per lo stato di mangiare, se necessario
+                this.fattoreEnergy = 2;
+                this.fattoreFun = 2;
+                this.fattoreFun = 1;
                 break;
             case NPC_STATES.SLEEP:
                 this.fattoreEnergy = -4;
+                this.fattoreFun = 1;
+                break;
+            case NPC_STATES.RUN:
+                this.fattoreFun = -6;
+                this.fattoreEnergy = 4;
                 break;
         }
 
-        if(this.catStateManager.currentStateCat===NPC_STATES.SLEEP) {
+        if (this.catStateManager.currentStateCat === NPC_STATES.SLEEP) {
             this.sleepText.setVisible(false);
             this.wakeUpText.setVisible(true);
-        } else {
+        }
+        if (this.catStateManager.currentStateCat !== NPC_STATES.SLEEP) {
             this.sleepText.setVisible(true);
             this.wakeUpText.setVisible(false);
         }
+
+        if (this.catStateManager.currentStateCat === NPC_STATES.RUN) {
+            this.playText.setVisible(false);
+            this.stopPlayText.setVisible(true);
+        }
+        if (this.catStateManager.currentStateCat !== NPC_STATES.RUN) {
+            this.stopPlayText.setVisible(false);
+            this.playText.setVisible(true);
+
+        }
+
+
 
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
         this.textCatManager.updateTextPosition(this.cat);
         this.energyBar.updateBar(time, this.fattoreEnergy);
         this.foodBar.updateBar(time, this.fattoreFood);
+        this.funBar.updateBar(time, this.fattoreFun);
         this.onClickWakeupSleepZone();
+        this.onClickPlay();
     }
 
-    onClickWakeupSleepZone() {
-        const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
-            .setOrigin(0).setInteractive();
-        zone.on('pointerup', () => {
-            if(this.catStateManager.currentStateCat === NPC_STATES.SLEEP) {
-                this.catStateManager.actionWakeUp();
-            } else {
-                this.catStateManager.actionSleep();
-            }
-        });
 
-    }
 
 }

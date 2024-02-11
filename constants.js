@@ -1,12 +1,11 @@
 const NPC_STATES = {
-    WALKING_LEFT: 'walking_left',
-    WALKING_RIGHT: 'walking_right',
     STOPPED: 'stopped',
     SITTING: 'sitting',
     JUMPING: 'jumping',
     EATING: "eating",
     WALKING: "WALKING",
     SLEEP: "SLEEP",
+    RUN: "RUN",
 };
 
 const DECREASES_BAR = {

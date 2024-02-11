@@ -35,12 +35,13 @@ class Cat extends Phaser.GameObjects.Sprite {
             frames: this.anims.generateFrameNumbers("cat", { start: 48, end: 50 }),
             frameRate: 0.8,
             repeat: -1,
+        });
+
+        anims.create({
+            key: NPC_STATES.RUN,
+            frames: this.anims.generateFrameNumbers("cat", { start: 40, end: 47 }),
+            frameRate: 8,
+            repeat: -1,
         })
     }
-
-
-    update(time) {
-       
-    }
-
 }
