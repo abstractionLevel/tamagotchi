@@ -34,6 +34,8 @@ class StatusBar {
         if (time > this.countTime &&  this.levelBar <= 50) {
             this.updateLevelBar(fattore);
             this.countTime = time + 4000;
+        } else if(time==null) {
+            this.updateLevelBar(fattore);
         }
     }
 

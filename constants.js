@@ -6,6 +6,7 @@ const NPC_STATES = {
     WALKING: "WALKING",
     SLEEP: "SLEEP",
     RUN: "RUN",
+    FUN: "FUN",
 };
 
 const DECREASES_BAR = {

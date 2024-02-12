@@ -21,10 +21,14 @@ class Scene2 extends Phaser.Scene {
         this.wakeUpText = null;
         this.playText = null;
         this.stopPlayText = null;
+        this.cacca;
+        this.groupCacca;
+        this.cleanBar;
+        this.cleanLine;
     }
 
     create() {
-        this.setupCat();
+        this.setUpEntity();
         this.setUpBackground();
         this.setUpPlatform();
         this.setUpColliders();
@@ -33,11 +37,13 @@ class Scene2 extends Phaser.Scene {
         this.sleep();
         this.stopPlay();
         this.play();
-
+        this.actionClean();
+        this.drawLine();
     }
 
-    setupCat() {
+    setUpEntity() {
         this.cat = new Cat(this, 200, config.height - 380, "cat");
+        this.groupCacca = this.physics.add.group();
         this.textCatManager = new TextCatManager(this, "meow", 0.2);
         this.catStateManager = new CatStateManager(this.cat);
         this.catMovementManager = new CatMovementManager(this.cat, this.catStateManager)
@@ -51,6 +57,7 @@ class Scene2 extends Phaser.Scene {
 
     setUpColliders() {
         this.physics.add.collider(this.cat, this.platforms);
+        this.physics.add.collider(this.groupCacca, this.platforms);
     }
 
     setUpBackground() {
@@ -58,6 +65,7 @@ class Scene2 extends Phaser.Scene {
         this.energyBar = new StatusBar(this, { x: this.positionBar.x, y: this.positionBar.y }, "Energy");
         this.foodBar = new StatusBar(this, { x: this.positionBar.x + 80, y: this.positionBar.y }, "Hunger")
         this.funBar = new StatusBar(this, { x: this.positionBar.x + 160, y: this.positionBar.y }, "Fun")
+        this.cleanBar = new StatusBar(this, { x: this.positionBar.x + 240, y: this.positionBar.y }, "Clean")
 
     }
 
@@ -107,6 +115,22 @@ class Scene2 extends Phaser.Scene {
         });
     }
 
+    actionClean() {
+        this.add.text(this.positionGiveFood.x, this.positionGiveFood.y + 50, 'Clean', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        const zone = this.add.zone(this.positionGiveFood.x, this.positionGiveFood.y + 50, 32, 32)
+            .setOrigin(0).setInteractive();
+
+        zone.on('pointerup', () => {
+            
+            this.cleanLine.visible = true;
+
+        });
+    }
+
     onClickWakeupSleepZone() {
         const zone = this.add.zone(this.positionGiveFood.x + 150, this.positionGiveFood.y, 32, 32)
             .setOrigin(0).setInteractive();
@@ -130,6 +154,12 @@ class Scene2 extends Phaser.Scene {
                 this.catStateManager.actionFun();
             }
         });
+
+    }
+
+    drawLine() {
+        this.cleanLine = this.add.line(100, 100, 0, 0, 800, 0, 0x000000);
+        this.cleanLine.visible = false;
 
     }
 
@@ -180,9 +210,10 @@ class Scene2 extends Phaser.Scene {
         if (this.catStateManager.currentStateCat !== NPC_STATES.RUN) {
             this.stopPlayText.setVisible(false);
             this.playText.setVisible(true);
-
         }
-
+        if (this.catStateManager.finishedToEat) {
+            this.makeCacca();
+        }
 
 
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
@@ -192,8 +223,37 @@ class Scene2 extends Phaser.Scene {
         this.funBar.updateBar(time, this.fattoreFun);
         this.onClickWakeupSleepZone();
         this.onClickPlay();
+
+        if (this.cleanLine.visible) {
+            this.cleanCacca();
+        }
+
+
     }
 
+    makeCacca() {
+        this.catStateManager.finishedToEat = false;
+        this.catStateManager.randomCatState = false;
+        this.catStateManager.currentStateCat = NPC_STATES.SITTING;
+        setTimeout(() => {
+            this.groupCacca.add(new Cacca(this, this.cat.flipX ? this.cat.x + 40 : this.cat.x - 40, this.cat.y + 60, "cacca"));
+            this.catStateManager.randomCatState = true;
+            this.cleanBar.updateBar(null, 20);
+        }, 2000)
+    }
+
+    cleanCacca() {
+        this.cleanLine.y += 2;
+        if (this.cleanLine.y >= config.height - 180) {
+            this.cleanLine.visible = false;
+            this.cleanLine.y = 100;
+            let children = this.groupCacca.getChildren();
+            children.forEach(child => {
+                child.destroy();
+            });
+            this.cleanBar.updateBar(null,-20)
+        }
+    }
 
 
 }

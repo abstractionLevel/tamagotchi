@@ -6,6 +6,7 @@ class CatStateManager {
         this.randomCatState = true;
         this.nextActionTime = 0;
         this.currentTime = 0;
+        this.finishedToEat = false;
 
     }
 
@@ -40,6 +41,7 @@ class CatStateManager {
                 this.cat.play(NPC_STATES.EATING, true);
                 if (time >= this.currentTime + 5000) {
                     this.randomCatState = true;
+                    this.finishedToEat = true;
                 }
                 break;
             case NPC_STATES.SLEEP:

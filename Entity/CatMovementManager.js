@@ -25,9 +25,6 @@ class CatMovementManager {
             case NPC_STATES.SLEEP:
                 this.stop();
                 break;
-            case NPC_STATES.FUN:
-                this.move();
-                break;
             case NPC_STATES.RUN:
                 this.setDirection(2);
                 break;

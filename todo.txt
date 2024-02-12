@@ -1,11 +1,3 @@
-1) energia, se il gatto cammina consuma piu energia.
-    - create una bar dell' energia
-    - fare la logica dell' energia, ogni n second il gatto perde energia
-    - se cammina perde piu energia.
-
--logica dai cibo al gatto
-    1)clicco sul bottone dai del cibo
-    2)faccio partire l animazione per 10 secondi
-        quando clicco sul bottone dai del cibo
-            - devo fermare i ciclo degli eventi
-            - devo far partire l animazione che mangia
+refactor lo stato fun , per poi possare la giusta Sprite
+state == fUN 
+    play(SPRITE_RUN)
