@@ -25,9 +25,11 @@ class Scene2 extends Phaser.Scene {
         this.groupCacca;
         this.cleanBar;
         this.cleanLine;
+        this.currentTime;
+        this.lastClosedTime;
     }
-
     create() {
+
         this.setUpEntity();
         this.setUpBackground();
         this.setUpPlatform();
@@ -39,10 +41,18 @@ class Scene2 extends Phaser.Scene {
         this.play();
         this.actionClean();
         this.drawLine();
+
+        this.time.addEvent({
+            delay: 10000,
+            callback: this.updateBar,
+            callbackScope: this,
+            loop: true
+        });
     }
 
+
     setUpEntity() {
-        this.cat = new Cat(this, 200, config.height - 380, "cat");
+        this.cat = new Cat(this, 200, 0, "cat");
         this.groupCacca = this.physics.add.group();
         this.textCatManager = new TextCatManager(this, "meow", 0.2);
         this.catStateManager = new CatStateManager(this.cat);
@@ -125,7 +135,7 @@ class Scene2 extends Phaser.Scene {
             .setOrigin(0).setInteractive();
 
         zone.on('pointerup', () => {
-            
+
             this.cleanLine.visible = true;
 
         });
@@ -218,9 +228,7 @@ class Scene2 extends Phaser.Scene {
 
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
         this.textCatManager.updateTextPosition(this.cat);
-        this.energyBar.updateBar(time, this.fattoreEnergy);
-        this.foodBar.updateBar(time, this.fattoreFood);
-        this.funBar.updateBar(time, this.fattoreFun);
+
         this.onClickWakeupSleepZone();
         this.onClickPlay();
 
@@ -231,6 +239,10 @@ class Scene2 extends Phaser.Scene {
 
     }
 
+    onScenePause() {
+        console.log("sono nel scene pause")
+    }
+
     makeCacca() {
         this.catStateManager.finishedToEat = false;
         this.catStateManager.randomCatState = false;
@@ -238,7 +250,7 @@ class Scene2 extends Phaser.Scene {
         setTimeout(() => {
             this.groupCacca.add(new Cacca(this, this.cat.flipX ? this.cat.x + 40 : this.cat.x - 40, this.cat.y + 60, "cacca"));
             this.catStateManager.randomCatState = true;
-            this.cleanBar.updateBar(null, 20);
+            this.cleanBar.updateBar(20);
         }, 2000)
     }
 
@@ -251,9 +263,19 @@ class Scene2 extends Phaser.Scene {
             children.forEach(child => {
                 child.destroy();
             });
-            this.cleanBar.updateBar(null,-20)
+            this.cleanBar.updateBar(-20)
         }
     }
 
+    updateBar() {
+        this.energyBar.updateBar(this.fattoreEnergy);
+        this.foodBar.updateBar(this.fattoreFood);
+        this.funBar.updateBar(this.fattoreFun);
+    }
 
+    updateBarAfterResponse(fattore) {
+        this.energyBar.updateBar(fattore);
+        this.foodBar.updateBar(fattore);
+        this.funBar.updateBar(fattore);
+    }
 }

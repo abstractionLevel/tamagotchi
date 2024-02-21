@@ -1,3 +1,3 @@
-refactor lo stato fun , per poi possare la giusta Sprite
-state == fUN 
-    play(SPRITE_RUN)
+- refactor lo stato fun cioe mettere una animazione corretta
+- far crescere apollo
+- capire come lavorare in background
