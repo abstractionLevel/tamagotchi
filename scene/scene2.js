@@ -30,6 +30,7 @@ class Scene2 extends Phaser.Scene {
     }
     create() {
 
+
         this.setUpEntity();
         this.setUpBackground();
         this.setUpPlatform();
@@ -174,6 +175,7 @@ class Scene2 extends Phaser.Scene {
     }
 
     update(time) {
+        this.displayState();
         this.currentTime = time;
         this.cat.update(time);
         this.catStateManager.update(time)
@@ -277,5 +279,12 @@ class Scene2 extends Phaser.Scene {
         this.energyBar.updateBar(fattore);
         this.foodBar.updateBar(fattore);
         this.funBar.updateBar(fattore);
+    }
+
+    displayState() {
+        var currentState = document.getElementById('currentState');
+        currentState.textContent = 'State: ' + this.catStateManager.currentStateCat;
+        var currentState = document.getElementById('fattoreFood');
+        currentState.textContent = 'Fattore food: ' + this.fattoreFood;
     }
 }

@@ -7,6 +7,9 @@ var config = {
         mode: Phaser.Scale.FIT,
     },
     scene: [Scene1,Scene2],
+    cache: {
+        html: false // Disabilita la cache HTML di Phaser
+    },
     pixelArt: true,
     autoCenter: true,
     physics: {
