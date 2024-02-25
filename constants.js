@@ -1,8 +1,8 @@
 const NPC_STATES = {
-    STOPPED: 'stopped',
-    SITTING: 'sitting',
+    STOPPED: 'STOPPED',
+    SITTING: 'SITTING',
     JUMPING: 'jumping',
-    EATING: "eating",
+    EATING: "EATING",
     WALKING: "WALKING",
     SLEEP: "SLEEP",
     RUN: "RUN",

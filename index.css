@@ -1,10 +1,15 @@
-body {
-    display: grid;
-    height: 50vh;
-    justify-items: center;
+.row {
+    display: flex; /* Utilizza Flexbox */
+    flex-direction: row; /* Orienta i figli in una riga */
 }
-#myGame {
-    align-self: center;
-    width: 100px;
-    height: 100px;
-} 
+.column {
+    flex: 1; /* Le colonne occupano lo stesso spazio */
+    padding: 10px; /* Spaziatura interna */
+    border: 1px solid #ccc; /* Bordo per visualizzare i limiti */
+}
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

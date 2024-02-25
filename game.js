@@ -1,12 +1,10 @@
 
 var config = {
     type: Phaser.AUTO,
-    width: 300,
+    width: 500,
     height: 600,
-    scale: {
-        mode: Phaser.Scale.FIT,
-    },
-    scene: [Scene1,Scene2],
+ 
+    scene: [Scene1, Scene2],
     cache: {
         html: false // Disabilita la cache HTML di Phaser
     },
@@ -14,7 +12,7 @@ var config = {
     autoCenter: true,
     physics: {
         default: "arcade",
-        arcade: {   
+        arcade: {
             gravity: { y: 300 },
             debug: false
         }
@@ -24,9 +22,9 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-window.addEventListener('resize', function () {
-    game.resize(window.innerWidth, window.innerHeight);
-});
+// window.addEventListener('resize', function () {
+//     game.resize(window.innerWidth, window.innerHeight);
+// });
 
 
 

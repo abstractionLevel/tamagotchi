@@ -1,17 +1,15 @@
 class CatMovementManager {
 
-    constructor(cat, catStateManager) {
+    constructor(cat) {
         this.cat = cat;
-        this.catStateManager = catStateManager;
         this.catWidth = 32;
         this.leftBoundary = this.catWidth;
-        this.rightBoundary = config.width - this.catWidth;
+        this.rightBoundary = 300;
         this.collideOnBorder = false;
         this.velocity = 0;
     }
 
-    update() {
-        const currentState = this.catStateManager.currentStateCat;
+    update(currentState) {
         switch (currentState) {
             case NPC_STATES.WALKING:
                 this.setDirection(1);
@@ -32,7 +30,6 @@ class CatMovementManager {
     }
 
     setDirection(speed) {
-        
         if (this.isCollideLeft()) {
             this.velocity = + speed;
             this.cat.setFlip(false);

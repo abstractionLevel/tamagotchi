@@ -13,7 +13,6 @@ class Scene2 extends Phaser.Scene {
         this.currentTime = 0;
         this.foodBar;
         this.funBar;
-        this.catMovementManager;
         this.fattoreEnergy = 1;
         this.fattoreFood = 0;
         this.fattoreFun = 0;
@@ -27,6 +26,9 @@ class Scene2 extends Phaser.Scene {
         this.cleanLine;
         this.currentTime;
         this.lastClosedTime;
+        this.previousStateCat = null;
+        this.previousFattoreFood = null;
+        this.previousFattoreEnergy = null;
     }
     create() {
 
@@ -42,6 +44,7 @@ class Scene2 extends Phaser.Scene {
         this.play();
         this.actionClean();
         this.drawLine();
+        this.cameras.main.setSize(config.width, config.height);
 
         this.time.addEvent({
             delay: 10000,
@@ -49,6 +52,30 @@ class Scene2 extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+
+        this.onClickWakeupSleepZone();
+        this.onClickPlay();
+
+        this.add.text(360, 30, 'Stats ', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        this.fpsText = this.add.text(360, 60, ' ', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        this.textCurrentStateCat = this.add.text(360, 90, '', {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        this.textFattoreFood = this.add.text(360, 120, '' , {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
     }
 
 
@@ -57,13 +84,13 @@ class Scene2 extends Phaser.Scene {
         this.groupCacca = this.physics.add.group();
         this.textCatManager = new TextCatManager(this, "meow", 0.2);
         this.catStateManager = new CatStateManager(this.cat);
-        this.catMovementManager = new CatMovementManager(this.cat, this.catStateManager)
         this.physics.add.existing(this.cat);
     }
 
     setUpPlatform() {
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(0, config.height - 200, 'ground').setScale(2, 1).refreshBody();
+        this.platforms.create(0, config.height - 200, 'ground').setScale(1.5, 1).refreshBody();
+        // this.platform.setSize(200, platform.height);
     }
 
     setUpColliders() {
@@ -155,9 +182,10 @@ class Scene2 extends Phaser.Scene {
 
     }
 
-    onClickPlay() {
+    onClickPlay() {//viene chiamato ad ogni aggiornamento
         const zone = this.add.zone(this.positionGiveFood.x + 250, this.positionGiveFood.y, 32, 32)
             .setOrigin(0).setInteractive();
+
         zone.on('pointerup', () => {
             if (this.catStateManager.currentStateCat === NPC_STATES.RUN) {
                 this.catStateManager.randomCatState = true;
@@ -175,17 +203,19 @@ class Scene2 extends Phaser.Scene {
     }
 
     update(time) {
-        this.displayState();
+
         this.currentTime = time;
+        this.catStateManager.update(time);
         this.cat.update(time);
-        this.catStateManager.update(time)
-        this.catMovementManager.update();
+        this.displayStats();
+        this.fpsText.setText('FPS: ' + Math.round(this.game.loop.actualFps));
 
         switch (this.catStateManager.currentStateCat) {
             case NPC_STATES.WALKING:
                 this.fattoreEnergy = 2;
                 this.fattoreFood = 1;
                 this.fattoreFun = 2;
+                break;
             case NPC_STATES.SITTING:
                 this.fattoreEnergy = 1;
                 this.fattoreFood = 1;
@@ -193,7 +223,6 @@ class Scene2 extends Phaser.Scene {
                 break;
             case NPC_STATES.EATING:
                 this.fattoreEnergy = 2;
-                this.fattoreFun = 2;
                 this.fattoreFun = 1;
                 break;
             case NPC_STATES.SLEEP:
@@ -203,6 +232,7 @@ class Scene2 extends Phaser.Scene {
             case NPC_STATES.RUN:
                 this.fattoreFun = -6;
                 this.fattoreEnergy = 4;
+                this.fattoreFood = 2;
                 break;
         }
 
@@ -214,7 +244,6 @@ class Scene2 extends Phaser.Scene {
             this.sleepText.setVisible(true);
             this.wakeUpText.setVisible(false);
         }
-
         if (this.catStateManager.currentStateCat === NPC_STATES.RUN) {
             this.playText.setVisible(false);
             this.stopPlayText.setVisible(true);
@@ -227,22 +256,16 @@ class Scene2 extends Phaser.Scene {
             this.makeCacca();
         }
 
-
         this.textCatManager.updateTextVisibility(this.catStateManager.currentStateCat === NPC_STATES.SITTING);
         this.textCatManager.updateTextPosition(this.cat);
-
-        this.onClickWakeupSleepZone();
-        this.onClickPlay();
 
         if (this.cleanLine.visible) {
             this.cleanCacca();
         }
 
-
     }
 
     onScenePause() {
-        console.log("sono nel scene pause")
     }
 
     makeCacca() {
@@ -281,10 +304,26 @@ class Scene2 extends Phaser.Scene {
         this.funBar.updateBar(fattore);
     }
 
-    displayState() {
-        var currentState = document.getElementById('currentState');
-        currentState.textContent = 'State: ' + this.catStateManager.currentStateCat;
-        var currentState = document.getElementById('fattoreFood');
-        currentState.textContent = 'Fattore food: ' + this.fattoreFood;
+    displayStats() {
+        
+        if (this.catStateManager.currentStateCat !== this.previousStateCat) {
+            this.textCurrentStateCat.setText('State:' + this.catStateManager.currentStateCat);
+            this.previousStateCat = { ...this.catStateManager.currentStateCat };
+        }
+        if (this.fattoreFood !== this.previousFattoreFood) {
+            this.textFattoreFood.setText('food decr: ' + this.fattoreFood);
+            this.previousFattoreFood = { ...this.fattoreFood };
+        }
+
+        // if (this.fattoreEnergy !== previousFattoreEnergy) {
+        //     this.textFattoreFood = this.add.text(360, 120, 'Energy decr: ' + this.fattoreFood, {
+        //         fontSize: '16px',
+        //         fill: '#000000'
+        //     });
+        //     previousFattoreEnergy = this.fattoreEnergy;
+        // }
+
+
+
     }
 }

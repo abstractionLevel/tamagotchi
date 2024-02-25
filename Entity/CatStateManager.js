@@ -7,6 +7,8 @@ class CatStateManager {
         this.nextActionTime = 0;
         this.currentTime = 0;
         this.finishedToEat = false;
+        this.catMovementManager = new CatMovementManager(cat);
+
 
     }
 
@@ -30,6 +32,7 @@ class CatStateManager {
     }
 
     setStateCat(catState, time) {
+        this.catMovementManager.update(catState);
         switch (catState) {
             case NPC_STATES.WALKING:
                 this.cat.play(NPC_STATES.WALKING, true);
