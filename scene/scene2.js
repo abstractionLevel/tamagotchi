@@ -29,6 +29,9 @@ class Scene2 extends Phaser.Scene {
         this.previousStateCat = null;
         this.previousFattoreFood = null;
         this.previousFattoreEnergy = null;
+        this.previousFattoreHunger = null;
+        this.previousFattoreFun = null;
+        
     }
     create() {
 
@@ -56,22 +59,34 @@ class Scene2 extends Phaser.Scene {
         this.onClickWakeupSleepZone();
         this.onClickPlay();
 
-        this.add.text(360, 30, 'Stats ', {
+        const  posStats = {x:324,y:60}
+
+        this.add.text(posStats.x, 30, 'Stats ', {
             fontSize: '16px',
             fill: '#000000'
         });
 
-        this.fpsText = this.add.text(360, 60, ' ', {
+        this.fpsText = this.add.text(posStats.x, 60, ' ', {
             fontSize: '16px',
             fill: '#000000'
         });
 
-        this.textCurrentStateCat = this.add.text(360, 90, '', {
+        this.textCurrentStateCat = this.add.text(posStats.x, 90, '', {
             fontSize: '16px',
             fill: '#000000'
         });
 
-        this.textFattoreFood = this.add.text(360, 120, '' , {
+        this.textFattoreFood = this.add.text(posStats.x, 120, '' , {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        this.textFattoreEnergy = this.add.text(posStats.x, 150, '' , {
+            fontSize: '16px',
+            fill: '#000000'
+        });
+
+        this.textFattoreFun = this.add.text(posStats.x, 180, '' , {
             fontSize: '16px',
             fill: '#000000'
         });
@@ -212,27 +227,27 @@ class Scene2 extends Phaser.Scene {
 
         switch (this.catStateManager.currentStateCat) {
             case NPC_STATES.WALKING:
-                this.fattoreEnergy = 2;
-                this.fattoreFood = 1;
-                this.fattoreFun = 2;
+                this.fattoreEnergy = 0.3;
+                this.fattoreFood = 0.4;
+                this.fattoreFun = 0.3;
                 break;
             case NPC_STATES.SITTING:
-                this.fattoreEnergy = 1;
-                this.fattoreFood = 1;
-                this.fattoreFun = 2;
+                this.fattoreEnergy = 0.1;
+                this.fattoreFood = 0.3;
+                this.fattoreFun = 0.5;
                 break;
             case NPC_STATES.EATING:
-                this.fattoreEnergy = 2;
-                this.fattoreFun = 1;
+                this.fattoreEnergy = 0.2;
+                this.fattoreFun = 0.1;
                 break;
             case NPC_STATES.SLEEP:
                 this.fattoreEnergy = -4;
-                this.fattoreFun = 1;
+                this.fattoreFood = 0.1;
                 break;
             case NPC_STATES.RUN:
-                this.fattoreFun = -6;
-                this.fattoreEnergy = 4;
-                this.fattoreFood = 2;
+                this.fattoreEnergy = 3;
+                this.fattoreFun = -3;
+                this.fattoreFood = 0.5;
                 break;
         }
 
@@ -311,17 +326,19 @@ class Scene2 extends Phaser.Scene {
             this.previousStateCat = { ...this.catStateManager.currentStateCat };
         }
         if (this.fattoreFood !== this.previousFattoreFood) {
-            this.textFattoreFood.setText('food decr: ' + this.fattoreFood);
+            this.textFattoreFood.setText('food ratio: ' + this.fattoreFood);
             this.previousFattoreFood = { ...this.fattoreFood };
         }
 
-        // if (this.fattoreEnergy !== previousFattoreEnergy) {
-        //     this.textFattoreFood = this.add.text(360, 120, 'Energy decr: ' + this.fattoreFood, {
-        //         fontSize: '16px',
-        //         fill: '#000000'
-        //     });
-        //     previousFattoreEnergy = this.fattoreEnergy;
-        // }
+        if(this.fattoreEnergy !== this.previousFattoreFood) {
+            this.textFattoreEnergy.setText('energy ratio: ' + this.fattoreEnergy);
+            this.previousFattoreEnergy = { ...this.fattoreEnergy };
+        }
+
+        if(this.fattoreFun !== this.previousFattoreFun) {
+            this.textFattoreFun.setText('fun ratio: ' + this.fattoreFun);
+            this.previousFattoreFun = { ...this.fattoreFun };
+        }
 
 
 
